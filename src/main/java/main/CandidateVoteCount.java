@@ -10,5 +10,5 @@ import lombok.*;
 
 public class CandidateVoteCount {
     private String candidateName;
-    private int ValidVoteCount;
+    private long ValidVoteCount;
 }

@@ -70,7 +70,7 @@ public class DataRetriever {
             while (resultSet.next()) {
                 CandidateVoteCount candidateVoteCount = new CandidateVoteCount();
                 candidateVoteCount.setCandidateName(resultSet.getString("candidate_name"));
-                candidateVoteCount.setValidVoteCount(resultSet.getInt("valid_vote"));
+                candidateVoteCount.setValidVoteCount(resultSet.getLong("valid_vote"));
                 candidateVoteCounts.add(candidateVoteCount);
             }
         } catch (SQLException e) {
@@ -78,4 +78,29 @@ public class DataRetriever {
         }
         return candidateVoteCounts;
     }
+
+     VoteSummary computeVoteSummary() {
+         DBConnection db = new DBConnection();
+         VoteSummary voteSummary;
+         try (Connection connection = db.getConnection()) {
+             String query = """
+                    select count(case when v.vote_type = 'VALID' then 1 end) as valid_count,
+                           count(case when v.vote_type = 'BLANK' then 1 end) as blank_count,
+                           count(case when v.vote_type = 'NULL' then 1 end) as null_count
+                    from vote v;
+            """;
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery();
+             voteSummary = new VoteSummary();
+             while (resultSet.next()) {
+                 voteSummary.setValidCount(resultSet.getLong("valid_count"));
+                 voteSummary.setBlankCount(resultSet.getLong("blank_count"));
+                 voteSummary.setNullCount(resultSet.getLong("null_count"));
+             }
+         } catch (SQLException e) {
+             throw new RuntimeException(e);
+         }
+         return voteSummary;
+     }
+
 }
