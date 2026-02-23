@@ -20,6 +20,7 @@ public class DataRetriever {
             while (resultSet.next()) {
                 countVotes = resultSet.getLong("total_votes");
 
+
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
