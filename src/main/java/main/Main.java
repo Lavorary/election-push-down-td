@@ -6,6 +6,7 @@ public class Main {
         DBConnection dbc = new DBConnection();
         DataRetriever dr = new DataRetriever();
         System.out.println(dr.countAllVotes());
+        System.out.println(dr.countVotesByTypes());
 
 }
 }
