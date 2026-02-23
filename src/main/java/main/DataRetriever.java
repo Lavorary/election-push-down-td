@@ -39,6 +39,7 @@ public class DataRetriever {
                     order by vote_type;
 
             """;
+
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
