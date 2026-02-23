@@ -10,5 +10,5 @@ import lombok.*;
 
 public class VoteTypeCount {
     private voteEnum voteType;
-    private int voteCount;
+    private int count;
 }

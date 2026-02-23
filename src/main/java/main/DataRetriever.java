@@ -44,7 +44,7 @@ public class DataRetriever {
             while (resultSet.next()) {
                 VoteTypeCount voteTypeCount = new VoteTypeCount();
                 voteTypeCount.setVoteType(voteEnum.valueOf(resultSet.getString("vote_type")));
-                voteTypeCount.setVoteCount(resultSet.getInt("total_votes"));
+                voteTypeCount.setCount(resultSet.getInt("total_votes"));
                 voteTypeCounts.add(voteTypeCount);
             }
         }catch(SQLException e){
