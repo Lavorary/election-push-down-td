@@ -103,4 +103,53 @@ public class DataRetriever {
          return voteSummary;
      }
 
+     double computeTurnoutRate(){
+        DBConnection db = new DBConnection();
+        double turnoutRate = 0;
+
+        try(Connection connection = db.getConnection()){
+            String query = """
+                    select (total_votes::numeric / total_voters::numeric) * 100 as percentage
+                    from (select count(id) as total_votes from vote) votes,
+                         (select count(id) as total_voters from voter) voters;
+                    """;
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                turnoutRate = resultSet.getDouble("percentage");
+            }
+        }catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+        return turnoutRate;
+     }
+
+      ElectionResult findWinner(){
+        DBConnection db = new DBConnection();
+        ElectionResult electionResult = new ElectionResult();
+        try (Connection connection = db.getConnection()){
+            String query = """
+                    select candidate_name, valid_vote from (
+                        select c.name as candidate_name, count(case when v.vote_type = 'VALID' then 1 end) as valid_vote
+                    from candidate c
+                    join vote v on c.id = v.candidate_id
+                    group by  c.name
+                    order by c.name) votes
+                        order by votes asc
+                                    limit 1;
+                    """;
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+
+                electionResult.setCandidateName(resultSet.getString("candidate_name"));
+                electionResult.setValidVoteCount(resultSet.getLong("valid_vote"));
+            }
+
+        }catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+        return electionResult;
+      }
+
 }
